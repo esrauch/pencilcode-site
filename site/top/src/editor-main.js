@@ -118,11 +118,14 @@ function posofpane(pane) {
 // Special owner is defined as one of:
 //   Nobody is the owner of this file/directory OR
 //   it's the guide who's the owner OR
-//   it's the event who's the owner
+//   it's the event who's the owner OR
+//   it's the drive who's the owner
 //
 function specialowner() {
-  return (!model.ownername || model.ownername === 'guide' ||
-          model.ownername === 'event');
+  return !model.ownername ||
+      model.ownername === 'guide' ||
+      model.ownername === 'event' ||
+      gdrivemode();
 }
 
 //
