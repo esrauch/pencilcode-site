@@ -41,7 +41,7 @@ window.ensureDriveLoaded = function() {
   if (!gapi.client.drive) {
     gapi.client.load('drive', 'v2', ensureDriveAuthed.bind(null, true));
   } else {
-    ensureDriveAuthed();
+    ensureDriveAuthed(true);
   }
 };
 
@@ -109,7 +109,9 @@ var doDriveFileWrite = function(path, method, sourceText, callback) {
 
   // TODO: Wrap this callback to an appropriate object that
   // the callers expect.
-  request.execute(callback);
+  request.execute(function(result) {
+    callback({'data': sourceText, 'file': 'x/' + result.id});
+  });
 };
 
 var readFile = function(fileId, callback) {
@@ -145,6 +147,9 @@ return {
   },
   readFile: function(fileId, callback) {
     ensureDriveLoadedAndAuthed(readFile.bind(null, fileId, callback));
+  },
+  createFile: function(sourceText, callback) {
+    ensureDriveLoadedAndAuthed(createFile.bind(null, callback));
   }
 };
 

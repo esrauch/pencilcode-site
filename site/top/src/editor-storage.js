@@ -137,8 +137,12 @@ window.pencilcode.storage = {
     if (isGDrive(ownername)) {
       // TODO (gdrive) - split filename into UID/fileid, then
       // use the gdrive API to load it.
-      
-      drive.readFile(filename.split('/')[1], callback);
+      if (filename == 'new') {
+        // Split filename into UID/fileid, then use the gdrive API to load it.
+        drive.saveAsNewFile("", callback);
+      } else {
+        drive.readFile(filename.split('/')[1], callback);
+      }
       return;
     }
     $.getJSON((ownername ? '//' + ownername + '.' +
@@ -218,8 +222,6 @@ window.pencilcode.storage = {
 
     // If we are viewing a Drive file, save the file back to Drive.
     if (isGDrive(ownername)) {
-      // TODO (gdrive) - split filename into UID/fileid, then
-      // use the gdrive API to load it.
       var fileId = filename.split('/')[1];
       drive.updateFile(fileId, msg.data, callback);
       return;
