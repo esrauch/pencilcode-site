@@ -79,7 +79,7 @@ var readFile = function(fileId, callback) {
         xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken)
       },
       success: function(text) {
-        callback({'data': text});
+        callback({'data': text, 'file': result.title});
       },
       fail: function() {
         callback({error: 'Error downloading file'});
