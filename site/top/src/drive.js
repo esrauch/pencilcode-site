@@ -21,7 +21,7 @@ var ensureDriveLoadedAndAuthed = function(callback) {
     return;
   }
   pendingCallbacks.push(callback);
-  if (!window.gapi) {
+  if (!window.gapi || !gapi.client) {
     var script = document.createElement('script');
     script.src = GAPI_JS_URL;
     document.body.appendChild(script);
@@ -31,7 +31,7 @@ var ensureDriveLoadedAndAuthed = function(callback) {
 }
 
 window.ensureDriveLoaded = function() {
-  if (!gapi.client || !gapi.client.drive) {
+  if (!gapi.client.drive) {
     gapi.client.load('drive', 'v2', ensureDriveAuthed);
   } else {
     ensureDriveAuthed();
