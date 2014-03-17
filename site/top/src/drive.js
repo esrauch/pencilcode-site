@@ -3,7 +3,12 @@ define(['jquery', 'editor-view'], function($, view) {
 var CLIENT_ID = '670662678080-5t97i55st99j1guuuqc6ui9sp9nlj1bb.apps.googleusercontent.com';
 
 var SCOPES = [
-  'https://www.googleapis.com/auth/drive.file',
+  // Note that have to request drive instead of drive.file so that the following flow works.
+  // 1) Person A creates a document, ACLs it to person B, sends person B a link
+  // 2) Person B clicks the link.
+  // With the drive.file scope we cannot open the file unless the user
+  // specifically clicks it from the Drive view.
+  'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/userinfo.email',
   'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/drive.install'
