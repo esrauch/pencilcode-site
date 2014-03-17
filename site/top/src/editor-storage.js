@@ -2,8 +2,8 @@
 // STORAGE AND CACHE SERVICE
 ///////////////////////////////////////////////////////////////////////////
 
-define(['jquery', 'see'],
-function($, see) {
+define(['jquery', 'see', 'drive'],
+function($, see, drive) {
 
 eval(see.scope('storage'));
 function hasBackup(filename) {
@@ -137,8 +137,10 @@ window.pencilcode.storage = {
     if (isGDrive(ownername)) {
       // TODO (gdrive) - split filename into UID/fileid, then
       // use the gdrive API to load it.
-      console.log('TODO: gdrive should load', filename);
-      callback({error: 'Should load ' + filename + '. Not yet implemented.'});
+      
+      drive.readFile(filename.split('/')[1], callback);
+      return;
+      // callback({error: 'Should load ' + filename + '. Not yet implemented.'});
     }
     $.getJSON((ownername ? '//' + ownername + '.' +
                window.pencilcode.domain : '') +
