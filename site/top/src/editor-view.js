@@ -655,6 +655,10 @@ function showShareDialog(opts) {
           opts.shareClipURL + '"><button class="copy" data-clipboard-text="' +
           opts.shareClipURL + '"><img src="/copy.png" title="Copy"></button>' +
          '</div>' : '') +
+        (opts.canShareOnDrive ?
+        '<button title="Share directly using Google Drive" class="drive"' +
+          ' onmousedown="window.saveToDrive();"><span>Share on Drive</span></button>' +
+         '</div>' : '') +
       '</div><br>' +
     '<button class="ok" title="Share by email">Email</button>' +
     '<button class="cancel">Cancel</button>';
@@ -663,6 +667,7 @@ function showShareDialog(opts) {
     dialog.find('a.quiet').tooltipster();
     dialog.find('button.ok').tooltipster();
     dialog.find('button.copy').tooltipster();
+    dialog.find('button.drive').tooltipster();
     dialog.find('.field input').each(function() {
       this.scrollLeft = this.scrollWidth;
     });

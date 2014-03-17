@@ -266,7 +266,7 @@ view.on('share', function() {
       encodeURIComponent(code).replace(/%20/g, '+'),
       function(shortened) {
         opts = {};
-        if (model.ownername) {
+        if (model.ownername && !gdrivemode()) {
           // Share the run URL unless there is no owner (e.g., for /first).
           opts.shareRunURL = "http://" + document.domain + '/home/' +
             modelatpos('left').filename;
@@ -275,6 +275,9 @@ view.on('share', function() {
 
         opts.shareClipURL = shortened;
         opts.title = modelatpos('left').filename;
+
+        // TODO: Enable saving to drive from not drive mode.
+        opts.canShareOnDrive = gdrivemode();
 
         // First save if needed (including login user if necessary)
         if (view.isPaneEditorDirty(paneatpos('left'))) {
@@ -442,6 +445,21 @@ view.on('save', function() { saveAction(false, null, null); });
 view.on('overwrite', function() { saveAction(true, null, null); });
 view.on('guide', function() {
   window.open('http://guide.' + window.pencilcode.domain + '/home/'); });
+
+window.saveToDrive = function() {
+  var mimetext = view.getPaneEditorText(paneatpos('left'));
+  var runtext = mimetext && mimetext.text;
+  var filename = modelatpos('left').filename;
+  if (!runtext && runtext !== '') {
+    // TODO: error message or something - or is this a deletion?
+    return;
+  }
+  // TODO: pick the right mime type here.
+  var newdata = $.extend({},
+      modelatpos('left').data, { data: runtext, mime: mimetext.mime });
+  storage.saveToDrive(model.ownername, filename, newdata,
+      function() { view.flashNotification('Saved.'); });
+};
 
 function saveAction(forceOverwrite, loginPrompt, doneCallback) {
   if (specialowner() && !gdrivemode()) {

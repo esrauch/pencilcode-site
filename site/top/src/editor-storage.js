@@ -183,6 +183,9 @@ window.pencilcode.storage = {
       }
     });
   },
+  saveToDrive: function(ownername, filename, data, callback) {
+    drive.saveAsNewFile(data.data, callback);
+  },
   // Given the filename (no owner, leading, or trailing slash),
   // attempts to save the file and then calls callback with the success code.
   // 2. Otherwise we're online and the network save is attempted, conditional
