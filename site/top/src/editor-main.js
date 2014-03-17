@@ -15,6 +15,7 @@ define('jquery', [], function() {
 require.config({
   baseUrl: '/',
   paths: {
+    'drive': 'src/drive',
     'editor-view': 'src/editor-view',
     'editor-storage': 'src/editor-storage',
     'editor-debug': 'src/editor-debug',
