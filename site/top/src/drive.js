@@ -9,6 +9,8 @@ var SCOPES = [
   'https://www.googleapis.com/auth/drive.install'
 ];
 
+var MIME_TYPE = 'text/x-pencilcode';
+
 // The callback name cannot be namespaced.
 var GAPI_JS_URL = "https://apis.google.com/js/client.js?onload=ensureDriveLoaded";
 
@@ -54,15 +56,50 @@ var ensureDriveAuthed = function() {
   });
 };
 
-var saveAsNewFile = function(sourceText) {
-  gapi.client.drive.files.insert({
-    'resource': {
-      'mimeType': MIME_TYPE,
-      'title': 'Untitled Pencilcode'
-    }
-  }).execute(function(result) {
-    window.console.log('Created', result);
-  });
+var saveAsNewFile = function(sourceText, callback) {
+  var path = '/upload/drive/v2/files';
+  var method = 'POST';
+  doDriveFileWrite(path, method, sourceText, callback);
+};
+
+var updateFile = function(fileId, sourceText, callback) {
+  var path = '/upload/drive/v2/files/' + fileId;
+  var method = 'PUT';
+  doDriveFileWrite(path, method, sourceText, callback);
+};
+
+var doDriveFileWrite = function(path, method, sourceText, callback) {
+  boundary = '-------314159265358979323846';
+  delimiter = "\r\n--" + boundary + "\r\n";
+  close_delim = "\r\n--" + boundary + "--";
+  var metadata = {
+    'title': 'Pencilcode document',
+    'mimeType': MIME_TYPE
+  };
+  var base64Data = btoa(sourceText);
+  var multipartRequestBody =
+      delimiter +
+      'Content-Type: application/json\r\n\r\n' +
+      JSON.stringify(metadata) +
+      delimiter +
+      'Content-Type: ' + MIME_TYPE + '\r\n' +
+      'Content-Transfer-Encoding: base64\r\n' +
+      '\r\n' +
+      base64Data +
+      close_delim;
+
+  var request = gapi.client.request({
+      'path': path,
+      'method': method,
+      'params': {'uploadType': 'multipart'},
+      'headers': {
+        'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+      },
+      'body': multipartRequestBody});
+
+  // TODO: Wrap this callback to an appropriate object that
+  // the callers expect.
+  request.execute(callback);
 };
 
 var readFile = function(fileId, callback) {
@@ -90,7 +127,10 @@ var readFile = function(fileId, callback) {
 
 return {
   saveAsNewFile: function(sourceText, callback) {
-    ensureDriveLoadedAndAuthed(saveAs.bind(null, sourceText, callback));
+    ensureDriveLoadedAndAuthed(saveAsNewFile.bind(null, sourceText, callback));
+  },
+  updateFile: function(fileID, sourceText, callback) {
+    ensureDriveLoadedAndAuthed(updateFile.bind(null, fileId, sourceText, callback));
   },
   readFile: function(fileId, callback) {
     ensureDriveLoadedAndAuthed(readFile.bind(null, fileId, callback));
