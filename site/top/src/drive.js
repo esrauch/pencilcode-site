@@ -69,25 +69,22 @@ var readFile = function(fileId, callback) {
   gapi.client.drive.files.get({
     'fileId': fileId
   }).execute(function(result) {
-    window.console.log('Read', result);
     if (!result.downloadUrl) {
       callback({error: 'Error getting download url'});
     }
     var accessToken = gapi.auth.getToken().access_token;
-    // TODO: Probably use JQuery XHR
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', result.downloadUrl);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-    xhr.onload = function() {
-      callback({
-        'data': xhr.responseText,
-      });
-      console.log(arguments, xhr.responseText);
-    };
-    xhr.onerror = function() {
-      callback({error: 'Error downloading file'});
-    };
-    xhr.send();
+    $.ajax({
+      url: result.downloadUrl,
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken)
+      },
+      success: function(text) {
+        callback({'data': text});
+      },
+      fail: function() {
+        callback({error: 'Error downloading file'});
+      }
+    });
   });
 };
 
