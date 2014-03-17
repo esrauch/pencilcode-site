@@ -1228,6 +1228,7 @@ function loadFileIntoPosition(position, filename, isdir, forcenet, cb) {
         if (!m.data) { m.data = ''; }
         mpp.isdir = false;
         mpp.data = m;
+        if (m.file) { mpp.filename = m.file; }
         view.setPaneEditorText(pane, m.data, filename);
         noteIfUnsaved(posofpane(pane));
         updateTopControls(false);
