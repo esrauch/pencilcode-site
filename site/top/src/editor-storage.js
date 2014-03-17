@@ -140,7 +140,6 @@ window.pencilcode.storage = {
       
       drive.readFile(filename.split('/')[1], callback);
       return;
-      // callback({error: 'Should load ' + filename + '. Not yet implemented.'});
     }
     $.getJSON((ownername ? '//' + ownername + '.' +
                window.pencilcode.domain : '') +
@@ -211,6 +210,15 @@ window.pencilcode.storage = {
       // otherwise.
       setTimeout(function() { callback && callback(
         backupOnly ? {backup:true} : {offline:true}); }, 0);
+      return;
+    }
+
+    // If we are viewing a Drive file, save the file back to Drive.
+    if (isGDrive(ownername)) {
+      // TODO (gdrive) - split filename into UID/fileid, then
+      // use the gdrive API to load it.
+      var fileId = filename.split('/')[1];
+      drive.updateFile(fileId, msg.data, callback);
       return;
     }
     // Attempt the network save: set up the conditional argument and the

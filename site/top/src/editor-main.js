@@ -118,11 +118,14 @@ function posofpane(pane) {
 // Special owner is defined as one of:
 //   Nobody is the owner of this file/directory OR
 //   it's the guide who's the owner OR
-//   it's the event who's the owner
+//   it's the event who's the owner OR
+//   it's the drive who's the owner
 //
 function specialowner() {
-  return (!model.ownername || model.ownername === 'guide' ||
-          model.ownername === 'event');
+  return !model.ownername ||
+      model.ownername === 'guide' ||
+      model.ownername === 'event';
+      gdrivemode();
 }
 
 //
@@ -441,7 +444,7 @@ view.on('guide', function() {
   window.open('http://guide.' + window.pencilcode.domain + '/home/'); });
 
 function saveAction(forceOverwrite, loginPrompt, doneCallback) {
-  if (specialowner()) {
+  if (specialowner() && !gdrivemode()) {
     signUpAndSave();
     return;
   }
@@ -468,7 +471,8 @@ function saveAction(forceOverwrite, loginPrompt, doneCallback) {
     }
     updateTopControls();
   }
-  if (newdata.auth && model.ownername != model.username) {
+  // TODO: Cleaner way of checking for Drive files.
+  if (newdata.auth && model.ownername != model.username && !gdrivemode()) {
     // If we know auth is required and the user isn't logged in,
     // prompt for a login.
     logInAndSave(filename, newdata, forceOverwrite,
