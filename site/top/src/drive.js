@@ -50,6 +50,7 @@ var ensureDriveAuthed = function() {
       for(var i = 0; i < pendingCallbacks.length; ++i) {
         pendingCallbacks[i]();
       }
+      pendingCallbacks = [];
     } else {
       console.error('Failed to auth');
     }
@@ -106,6 +107,7 @@ var readFile = function(fileId, callback) {
   gapi.client.drive.files.get({
     'fileId': fileId
   }).execute(function(result) {
+    console.log(result);
     if (!result.downloadUrl) {
       callback({error: 'Error getting download url'});
     }
@@ -113,7 +115,7 @@ var readFile = function(fileId, callback) {
     $.ajax({
       url: result.downloadUrl,
       beforeSend: function(xhr) {
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken)
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
       },
       success: function(text) {
         callback({'data': text, 'file': result.title});
@@ -129,7 +131,7 @@ return {
   saveAsNewFile: function(sourceText, callback) {
     ensureDriveLoadedAndAuthed(saveAsNewFile.bind(null, sourceText, callback));
   },
-  updateFile: function(fileID, sourceText, callback) {
+  updateFile: function(fileId, sourceText, callback) {
     ensureDriveLoadedAndAuthed(updateFile.bind(null, fileId, sourceText, callback));
   },
   readFile: function(fileId, callback) {

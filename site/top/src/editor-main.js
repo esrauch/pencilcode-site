@@ -471,7 +471,9 @@ function saveAction(forceOverwrite, loginPrompt, doneCallback) {
     }
     updateTopControls();
   }
-  if (newdata.auth && model.ownername != model.username) {
+  // TODO: Cleaner way of checking for Drive files.
+  if (newdata.auth && model.ownername != model.username &&
+      model.ownername != 'drive') {
     // If we know auth is required and the user isn't logged in,
     // prompt for a login.
     logInAndSave(filename, newdata, forceOverwrite,
