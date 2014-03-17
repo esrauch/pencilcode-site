@@ -1,4 +1,4 @@
-define(['jquery'], function($) {
+define(['jquery', 'editor-view'], function($, view) {
 
 var CLIENT_ID = '670662678080-5t97i55st99j1guuuqc6ui9sp9nlj1bb.apps.googleusercontent.com';
 
@@ -32,24 +32,28 @@ var ensureDriveLoadedAndAuthed = function(callback) {
 
 window.ensureDriveLoaded = function() {
   if (!gapi.client.drive) {
-    gapi.client.load('drive', 'v2', ensureDriveAuthed);
+    gapi.client.load('drive', 'v2', ensureDriveAuthed.bind(null, true));
   } else {
     ensureDriveAuthed();
   }
 };
 
-var ensureDriveAuthed = function() {
+var ensureDriveAuthed = function(immediate) {
   gapi.auth.authorize({
     'client_id': CLIENT_ID,
     'scope': SCOPES,
-    'immediate': 'true'
+    'immediate': immediate
   }, function(authResult) {
     if (authResult && !authResult.error) {
       for(var i = 0; i < pendingCallbacks.length; ++i) {
         pendingCallbacks[i]();
       }
     } else {
-      console.error('Failed to auth');
+      if (immediate) {
+	view.showDriveAuthDialog({callback: ensureDriveAuthed.bind(null, false)});
+      } else {
+	console.error('Failed to auth');
+      }
     }
   });
 };

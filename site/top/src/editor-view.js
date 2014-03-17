@@ -104,6 +104,7 @@ window.pencilcode.view = {
   // Show share dialog.
   showShareDialog: showShareDialog,
   showDialog: showDialog,
+  showDriveAuthDialog: showDriveAuthDialog,
   // The run button
   showMiddleButton: showMiddleButton,
   // Sets editable name.
@@ -579,6 +580,32 @@ function showMiddleButton(which) {
   }
   // Enable tooltipster on the middle button.
   $('#middle button').tooltipster();
+}
+
+///////////////////////////////////////////////////////////////////////////
+// DRIVE AUTH DIALOG
+///////////////////////////////////////////////////////////////////////////
+
+function showDriveAuthDialog(opts) {
+  if (!opts) {
+    opts = {};
+  }
+
+  opts.prompt = 'Click to Connect to Google Drive';
+  opts.content = '<div class="content">' +
+    '<button class="connect">Connect</button>'
+    '</div>';
+
+  opts.init = function(dialog) {
+    var button = dialog.find('button.connect');
+    button.focus();
+    button.get()[0].onclick = function() {
+      opts.callback.call();
+      dialog.remove();
+    };
+  };
+
+  showDialog(opts);
 }
 
 ///////////////////////////////////////////////////////////////////////////
